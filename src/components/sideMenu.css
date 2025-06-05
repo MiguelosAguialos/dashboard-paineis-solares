@@ -1,0 +1,9 @@
+.sidemenu {
+    width: 100px;
+    transition: width 0.5s ease-in-out;
+}
+
+.sidemenu-icon {
+  transition: width 0.5s ease-in-out;
+}
+
