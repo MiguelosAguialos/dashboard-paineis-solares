@@ -36,79 +36,20 @@ import {
 } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import AdicionarHospital from "../components/adicionar-hospital/AdicionarHospital";
 import {
   generateRandomNums,
   generateColor,
   generatePower,
   generateTemperature,
 } from "../utils/dataGenerators";
+import { useOutletContext } from "react-router";
 
 function Home() {
   const date = dayjs();
   const [modal, setModal] = useState(true);
   const toggleModal = () => setModal(!modal);
 
-  const [hospitais, setHospitais] = useState([
-    {
-      nome: "Albert Einstein 1",
-      localizacao: "São Paulo - SP",
-      data: generateRandomNums(7, 100, 200),
-      powerGenerated: generatePower(),
-      powerConsumed: generatePower(),
-      status: true,
-      lastDate: date.get("date"),
-      temperature: generateTemperature(),
-      batteryLevel: Math.floor(Math.random() * 80) + 20,
-    },
-    {
-      nome: "Albert Einstein 2",
-      localizacao: "São Paulo - SP",
-      data: generateRandomNums(7, 80, 210),
-      powerGenerated: generatePower(),
-      powerConsumed: generatePower(),
-      status: true,
-      lastDate: date.get("date"),
-      temperature: generateTemperature(),
-      batteryLevel: Math.floor(Math.random() * 80) + 20,
-    },
-    {
-      nome: "Sírio Libanês 1",
-      localizacao: "São Paulo - SP",
-      data: generateRandomNums(7, 120, 180),
-      powerGenerated: generatePower(),
-      powerConsumed: generatePower(),
-      status: false,
-      lastDate: date.subtract(2, "hours").get("date"),
-      temperature: generateTemperature(),
-      batteryLevel: Math.floor(Math.random() * 80) + 20,
-    },
-    {
-      nome: "São Luíz 1",
-      localizacao: "São Paulo - SP",
-      data: generateRandomNums(7, 50, 150),
-      powerGenerated: generatePower(),
-      powerConsumed: generatePower(),
-      status: true,
-      lastDate: date.get("date"),
-      temperature: generateTemperature(),
-      batteryLevel: Math.floor(Math.random() * 80) + 20,
-    },
-  ]);
-
-  const handleAddHospital = (hospital) => {
-    const newHospital = {
-      ...hospital,
-      localizacao: hospital.localizacao || "Localização não informada",
-      data: generateRandomNums(7, 50, 200),
-      powerGenerated: generatePower(),
-      powerConsumed: generatePower(),
-      lastDate: date.get("date"),
-      temperature: hospital.temperatura ?? generateTemperature(),
-      batteryLevel: hospital.bateria ?? Math.floor(Math.random() * 80) + 20,
-    };
-    setHospitais((prev) => [...prev, newHospital]);
-  };
+  const {hospitais, setHospitais} = useOutletContext();
 
   const temperaturaMedia =
     hospitais.reduce((soma, h) => soma + (h.temperature ?? 0), 0) /
@@ -143,17 +84,6 @@ function Home() {
   };
 
   const activeHospitals = hospitais.filter((item) => item.status);
-
-  const data2 = {
-    labels: activeHospitals.map((item) => item.nome),
-    datasets: [
-      {
-        label: activeHospitals.map((item) => item.nome),
-        data: activeHospitals.map((item) => item.powerGenerated),
-        backgroundColor: activeHospitals.map(() => generateColor()),
-      },
-    ],
-  };
 
   const qtdAlertas =
     hospitais.filter((item) => item.powerConsumed > item.powerGenerated)
@@ -194,7 +124,7 @@ function Home() {
               </CardBody>
             </Card>
 
-            <Card className="shadow rounded" style={{ minHeight: "320px", marginBottom: "1rem" }}>
+            <Card className="shadow rounded" style={{ marginBottom: "1rem" }}>
               <CardBody>
                 <CardTitle tag="h5">Resumo Operacional dos Hospitais</CardTitle>
                 <CardSubtitle className="mb-1 text-muted" tag="h6">
@@ -297,7 +227,7 @@ function Home() {
                     {qtdAlertas} alertas..
                   </CardSubtitle>
                   <CardText className="text-scroll">
-                    {hospitais.map((item) =>
+                    {hospitais.filter(item => item.status).map((item) =>
                       item.powerConsumed > item.powerGenerated ? (
                         <div key={`alert-consume-${item.nome}`}>
                           Hospital <strong>{item.nome}</strong> está consumindo mais energia do que produzindo!

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import { Button, Alert } from "reactstrap";
+import { useOutletContext } from "react-router";
 
 const schema = yup.object().shape({
   nome: yup.string().trim().required("Nome do hospital é obrigatório."),
@@ -36,6 +37,7 @@ const schema = yup.object().shape({
 
 function AdicionarHospital({ onAdd }) {
   const [success, setSuccess] = useState(false);
+  const {hospitais, setHospitais, date} = useOutletContext()
 
   const {
     register,
@@ -58,13 +60,29 @@ function AdicionarHospital({ onAdd }) {
   });
 
   const onSubmit = (data) => {
-    const hospitalData = {
+    let hospitalData = {
       ...data,
-      capacidade: data.capacidade === null ? undefined : Number(data.capacidade),
-      consumo: data.consumo === null ? undefined : Number(data.consumo),
-      bateria: Number(data.bateria),
-      temperatura: data.temperatura === null ? undefined : Number(data.temperatura),
+      id: hospitais.reduce((max, item) => item.id > max.id ? item : max, hospitais[0])[`id`]+1,
+      powerGenerated: data.capacidade === null ? 0 : Number(data.capacidade),
+      powerConsumed: data.consumo === null ? 1 : Number(data.consumo),
+      batteryLevel: Number(data.bateria),
+      temperature: data.temperatura === null ? 0 : Number(data.temperatura),
+      data: [],
+      lastDate: data.dataInstalacao
     };
+
+    setHospitais([...hospitais, hospitalData])
+    console.log(hospitais)
+
+    // nome: "São Luíz 1",
+    //   localizacao: "São Paulo - SP",
+    //   data: generateRandomNums(7, 50, 150),
+    //   powerGenerated: generatePower(),
+    //   powerConsumed: generatePower(),
+    //   status: true,
+    //   lastDate: date.get("date"),
+    //   temperature: generateTemperature(),
+    //   batteryLevel: Math.floor(Math.random() * 80) + 20,
 
     if (onAdd) {
       onAdd(hospitalData);
