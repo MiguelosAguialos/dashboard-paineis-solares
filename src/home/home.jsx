@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 function Home() {
 
     let qtdAlertas = 0
+    const date = dayjs()
 
     const startHospitals = [
         {
@@ -17,24 +18,32 @@ function Home() {
             data: generateRandomNums(7, 100, 200),
             powerGenerated: generatePower(),
             powerConsumed: generatePower(),
+            status: true,
+            lastDate: date.get('date'),
         },
         {
             nome: "Albert Einstein 2",
             data: generateRandomNums(7, 80, 210),
             powerGenerated: generatePower(),
             powerConsumed: generatePower(),
+            status: true,
+            lastDate: date.get('date'),
         },
         {
             nome: "Sírio Libanês 1",
             data: generateRandomNums(7, 120, 180),
             powerGenerated: generatePower(),
             powerConsumed: generatePower(),
+            status: false,
+            lastDate: date.subtract(2, 'hours').get('date'),
         },
         {
             nome: "São Luíz 1",
             data: generateRandomNums(7, 50, 150),
             powerGenerated: generatePower(),
             powerConsumed: generatePower(),
+            status: true,
+            lastDate: date.get('date'),
         }
     ]
 
@@ -42,8 +51,6 @@ function Home() {
     const toggleModal = () => setModal(!modal);
     const dataRange = 7;
     let num = 0;
-
-    const date = dayjs()
 
     const labels1 = []
     while(num < dataRange){
@@ -63,17 +70,17 @@ function Home() {
     }
 
     const data2 = {
-        labels: startHospitals.map(item => (item['nome'])),
+        labels: startHospitals.filter(item => item.status).map(item => (item['nome'])),
         datasets: [
             {
-                label: startHospitals.map(item => (item['nome'])),
-                data: startHospitals.map(item => (item['powerGenerated'])),
-                backgroundColor: startHospitals.map(item => (generateColor()))
+                label: startHospitals.filter(item => item.status).map(item => (item['nome'])),
+                data: startHospitals.filter(item => item.status).map(item => (item['powerGenerated'])),
+                backgroundColor: startHospitals.filter(item => item.status).map(item => (generateColor()))
             }
         ]
     }
 
-    qtdAlertas = startHospitals.filter((item) => item.powerConsumed > item.powerGenerated).length
+    qtdAlertas = startHospitals.filter((item) => item.powerConsumed > item.powerGenerated).length + startHospitals.filter((item) => !item.status).length
 
   return (
     <>
@@ -100,8 +107,8 @@ function Home() {
                     </Card>
                     <Card className='m-1 h-50 shadow rounded'>
                         <CardBody>
-                            <CardTitle tag="h5">Hospitais Ativos</CardTitle>
-                            <CardSubtitle className="mb-2 text-muted" tag="h6">Energia gerada na última hora:</CardSubtitle>
+                            <CardTitle tag="h5">Status Hospitais</CardTitle>
+                            <CardSubtitle className="mb-2 text-muted" tag="h6">Última atualização hospitais</CardSubtitle>
                         </CardBody>
                     </Card>
                 </div>
@@ -112,14 +119,14 @@ function Home() {
                                 <CardBody>
                                     <CardTitle tag="h5">Energia média gerada</CardTitle>
                                     <CardSubtitle className="mb-2 text-muted" tag="h6">Energia média sendo gerada por hora:</CardSubtitle>
-                                    <CardText className='fw-bold'>{startHospitals.reduce((soma, item) => soma + item.powerGenerated, 0)} kW / h</CardText>
+                                    <CardText className='fw-bold'>{startHospitals.filter(item => item.status).reduce((soma, item) => soma + item.powerGenerated, 0)} kW / h</CardText>
                                 </CardBody>
                             </Card>
                             <Card className='mt-1 flex-fill shadow rounded'>
                                 <CardBody>
                                     <CardTitle tag="h5">Energia média consumida</CardTitle>
                                     <CardSubtitle className="mb-2 text-muted" tag="h6">Energia média consumida por hora:</CardSubtitle>
-                                    <CardText className='fw-bold'>{startHospitals.reduce((soma, item) => soma + item.powerConsumed, 0)} kW / h</CardText>
+                                    <CardText className='fw-bold'>{startHospitals.filter(item => item.status).reduce((soma, item) => soma + item.powerConsumed, 0)} kW / h</CardText>
                                 </CardBody>
                             </Card>
                         </div>
@@ -133,6 +140,9 @@ function Home() {
                                     {startHospitals.map((item) => (
                                         <p className={item.powerConsumed > item.powerGenerated ? `` : `d-none`}>Hospital <strong>{item.nome}</strong> está consumindo mais energia do que produzindo!</p>
                                     ))}
+                                    {startHospitals.map((item) => (
+                                        <p className={!item.status ? `text-danger fw-bold` : `d-none`}>Painel solar do Hospital <strong>{item.nome}</strong> está inativo!</p>
+                                    ))}
                                 </CardText>
                             </CardBody>
                         </Card>
@@ -141,7 +151,7 @@ function Home() {
                         <Card className='shadow rounded h-100 m-2'>
                             <CardBody className='h-100 d-flex flex-column'>
                                 <CardTitle tag="h5">Geração de energia na última hora</CardTitle>
-                                <CardSubtitle className="mb-2 text-muted" tag="h6">Todos os hospitais ativos..</CardSubtitle>
+                                <CardSubtitle className="mb-2 text-muted" tag="h6">Apenas hospitais ativos..</CardSubtitle>
                                 <div className='h-100'>
                                     <Bar className='img-fluid' data={data2} options={{indexAxis: `y`}} />
                                 </div>
