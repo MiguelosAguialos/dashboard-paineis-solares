@@ -1,0 +1,14 @@
+.text-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+}
+.card-scroll {
+    overflow: auto;
+}
+
+.card-title {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}

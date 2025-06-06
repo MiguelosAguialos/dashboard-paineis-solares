@@ -41,7 +41,7 @@ function Menu() {
 
   return (
     <>
-        <div className={`sidemenu d-flex flex-column align-items-center p-4 ${visible ? 'col-1' : 'col-2'}`}>
+        <div className={`sidemenu d-flex flex-column align-items-center p-4 ${visible ? 'col-1' : 'w-15'}`}>
             <TfiAlignLeft role='button' className={`sidemenu-icon ${visible ? '' : 'd-none'}`} onClick={handleMenu} size={'1.8rem'} />
             <TfiClose role='button' className={`sidemenu-icon ${visible ? 'd-none' : ''}`} onClick={handleMenu} size={'1.8rem'} />
             <div className='d-flex flex-column h-100 w-100 align-items-center mt-5'>
