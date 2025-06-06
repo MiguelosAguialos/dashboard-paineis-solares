@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './gerenciar.css'
-import Menu from '../components/sideMenu'
+import Menu from '../sideMenu'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from 'reactstrap';
 
